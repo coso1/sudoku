@@ -76,7 +76,34 @@ Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
 //Funcion que retorna verdadero si el box dado esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 
+procedure menuPrincipal;
+
+procedure menuUsuario;
+
+procedure menuJuego;
+
+
 Implementation
+procedure menuPrincipal;
+begin
+	Writeln('1) Crear usuario.');
+	Writeln('2) Usuario existente.');
+	Writeln('3) Salir.');
+end;
+procedure menuUsuario;
+begin
+	Writeln('1) Cambiar usuario');
+	Writeln('2) Eliminar usuario');
+	Writeln('3) Cargar partida');
+	Writeln('4) Nueva partida');
+	Writeln('5) Salir');
+end;
+procedure menuJuego;
+begin
+	Writeln('1) Insertar elemento');
+	Writeln('2) Guarda partida.');
+	Writeln('3) Salir.');
+end;
 
 //Dado un tablero y una posicion de la matriz dice si ese campo se corresponde a un valor inicial o no.
 Function isInitialValue(board : TSudokuBoard; i, j : Integer) : Boolean;
@@ -222,17 +249,39 @@ begin
 		if not (i in conjunto) then
 			repetido:=true;
 		i+=1;
-	until (i = 9) or (repetido);
+	until (i > 9) or (repetido);
 	compruebaColumna := not repetido;
 end;
 
 //Funcion que retorna verdadero si el box dado esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
+var
+	filaBox,colBox,i,j,colElem,filaElem: integer;
+	conjunto:TConValidos;
+	repetido:boolean;
 begin
-(*	fila = x+1 div 3;
-	col = x+(fila-1)*3;
-	board.sudokuParcial[fila,col];
-*)
+	repetido:=false;
+	filaBox = (box + 2) div 3;
+	colBox= ((box + 2) mod 3) + 1;
+	filaElem:=3*(colBox-1)+1;
+	colElem:=3*(filaBox-1)+1;
+	j:=filaElem;
+	i:=colElem;
+	conjunto:=[];
+	repeat
+		repeat
+			conjunto+:board.sudokuParcial[i,j];
+			j+=1;
+		until (j>colElem+2);
+		i+=1;
+	until(i>filaElem+2);
+	i:=1;
+	repeat
+		if not (i in conjunto) then
+			repetido:=true;
+		i+=1;
+	until (i > 9) or (repetido);
+	compruebaBox:= not repetido;
 end;
 
 End.
