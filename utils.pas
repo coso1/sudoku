@@ -1,6 +1,6 @@
 { *********************************************************************************
 
-			Introduccion a la Algoritmica y Programación 
+			Introduccion a la Algoritmica y Programación
 						Año 2017
 
   Unit con acciones y funciones necesarias para la solucion del Proyecto Sudoku
@@ -13,7 +13,8 @@
   Ademas debe agregar todas las que sean y crea necesarias para su solución.
 
 
-  Integrantes del grupo: 
+  Integrantes del grupo:
+
 
   *************************************************************************************}
 
@@ -29,6 +30,8 @@ N = 9; //Tamaño de la matriz.
 
 Type
 
+TValidos = (1,2,3,4,5,6,7,8,9);
+TConValidos = set of TValidos;
 //Declaracion de un enumerado para manejar los niveles.
 Nivel = (dificil, normal, facil);
 
@@ -36,7 +39,7 @@ Nivel = (dificil, normal, facil);
 TSudokuValues = array [1..N, 1..N] of Integer;
 
 {El tablero del juego, el mismo cuenta con el sudoku inicial (no debe ser modificado).
- El tablero parcial, donde el usuario modifica los valores de la matriz (juega), 
+ El tablero parcial, donde el usuario modifica los valores de la matriz (juega),
  solo puede modificar aquellas posiciones que en sudokuInicial tienen valor 0
  el nivel de este tablero
  el nombre del tablero.}
@@ -82,13 +85,13 @@ begin
 	if ((board.sudokuInicial[i,j] <> 0) and (board.sudokuInicial[i,j] = board.sudokuParcial[i,j])) then
 	//	no es una posicion vacia         y   el valor no fue modificado (OJO con esta condicion!)
 		isInitialValue := True
-	else 
+	else
 		isInitialValue := False;
 end;
 
 //Muestra el tablero inicial, los espacios libres se representan con el numero 0.
 Procedure mostrarTableroInicial (board : TSudokuBoard);
-var 
+var
 	i, j: Integer;
 begin
 	for i:=1 to N do
@@ -140,7 +143,7 @@ begin
 			if (j = 7) then
 				Write('| ');
 			if (isInitialValue(board, i, j)) then
-				TextColor(Blue)	
+				TextColor(Blue)
 			else
 				TextColor(Red);
 			Write(board.sudokuParcial[i,j], ' ');
@@ -175,22 +178,62 @@ end;
 //		(para este caso, si necesita cambiar el perfil de la funcion puede hacerlo) 	  //
 
 //Funcion que retorna verdadero si la fila dada esta completa con valores del 1 al 9 sin repetidos.
-Function compruebaFila(board : TSudokuBoard; fila : Integer) : Boolean;
+Function compruebaFila(board : TSudokuBoard; fila,x : Integer) : Boolean;
+var
+	repetido:Boolean;
+	i:Integer;
 begin
-	//A COMPLETAR
+	repetido := false;
+	if(x <> 9) then
+		i:=x+1;
+		repeat
+			if(board.sudokuParcial[x,fila] = board.sudokuParcial[i,fila]) then
+			begin
+				repetido := true;
+			end;
+			i+=1;
+		until (i=9) or (repetido = true);
+		if(repetido)then
+			compruebaFila := false;
+		else
+		begin
+			compruebaFila(board,fila,x+1);
+		end;
+	else
+	begin
+		compruebaFila := true;
+	end;
 end;
 
 //Funcion que retorna verdadero si la columna dada esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
+var
+	i:Integer;
+	repetido:Boolean;
+	conjunto:TConValidos;
 begin
-	//A COMPLETAR
+	repetido := false;
+	conjunto := [];//con inicializado
+	for i := 1 to 9 do
+	begin
+		conjunto += board.sudokuParcial[columna,y]
+	end;
+	i:=1;
+	repeat
+		if not (i in conjunto) then
+			repetido:=true;
+		i+=1;
+	until (i = 9) or (repetido);
+	compruebaColumna := not repetido;
 end;
 
 //Funcion que retorna verdadero si el box dado esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 begin
-	//A COMPLETAR
+(*	fila = x+1 div 3;
+	col = x+(fila-1)*3;
+	board.sudokuParcial[fila,col];
+*)
 end;
-
 
 End.
