@@ -13,8 +13,7 @@
   Ademas debe agregar todas las que sean y crea necesarias para su solución.
 
 
-  Integrantes del grupo:
-
+  Integrantes del grupo:	Lopez Ayrton, Androetto Pablo
 
   *************************************************************************************}
 
