@@ -52,6 +52,33 @@ TSudokuBoard = Record
 //El archivo donde se encuentran guardados los tableros iniciales.
 TFile = file of TSudokuBoard;
 
+TUsuario = Record
+				nombre,apellido:String;s
+				end;
+
+TAUsuario = file of TUsuario;
+
+TPartida = Record
+				nombre:String;
+				tablero:TSudokuBoard;
+				end;
+
+TAPartida= file of TPartida;
+
+TNusuario = Record
+					info: TUsuairo;
+					next: ^TNUsuatio;
+					end;
+
+TLUsuario= ^TNUsuairo;
+
+TNPartidas = Record
+					info: TUsuairo;
+					next: ^TNUsuatio;
+					end;
+
+TLPartida = ^TNPartidas;
+
 //****************************************************************************************************//
 
 
@@ -81,6 +108,7 @@ procedure menuPrincipal;
 procedure menuUsuario;
 
 procedure menuJuego;
+
 
 
 Implementation
