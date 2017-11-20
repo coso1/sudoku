@@ -15,6 +15,8 @@
 
   Integrantes del grupo:	Lopez Ayrton, Androetto Pablo
 
+
+en problemas poner que pusismos var en todos los lista
   *************************************************************************************}
 
 Unit utils;
@@ -29,8 +31,8 @@ N = 9; //Tamaño de la matriz.
 
 Type
 
-TValidos = (1,2,3,4,5,6,7,8,9);
-TConValidos = set of TValidos;
+TValidos = 1..9;
+TConValidos = array[TValidos] of Integer;
 //Declaracion de un enumerado para manejar los niveles.
 Nivel = (dificil, normal, facil);
 
@@ -47,44 +49,41 @@ TSudokuBoard = Record
 					sudokuParcial : TSudokuValues;
 					nivel : Nivel;
 					nombre : String;
+					completado:Boolean; //indica si esta completado
 				end;
 
-//El archivo donde se encuentran guardados los tableros iniciales.
-TFile = file of TSudokuBoard;
 
+//El archivo donde se encuentran guardados los tableros iniciales.
+TASudokuBoard = file of TSudokuBoard;
+
+TNSudokuBoard = Record
+					info: TSudokuBoard;
+					next,back: ^TNSudokuBoard;
+					end;
+
+TLSudokuBoard = Record
+						q,u:^TNSudokuBoard;
+						end;
 //Tipo registro usuario
 TUsuario = Record
-				nombre,apellido:String;s
+				user,pass:String;
 				end;
 
 //Tipo archivo de usuario
 TAUsuario = file of TUsuario;
 
-//Tipo reg. de partida
-TPartida = Record
-				nombre:String;
-				tablero:TSudokuBoard;
-				end;
-//Tipo archivo de partida
-TAPartida= file of TPartida;
 
 //TNodo de usuario
-TNusuario = Record
-					info: TUsuairo;
-					next: ^TNUsuatio;
+TNUsuario = Record
+					info: TUsuario;
+					next,back: ^TNUsuario;
 					end;
 
 //Tipo puntero de TNodo de usaurio(TLista de usuario)
-TLUsuario= ^TNUsuairo;
-
-//TNodo de partidas
-TNPartidas = Record
-					info: TUsuairo;
-					next: ^TNUsuatio;
-					end;
-//Tipo puntero a TNodo de partida
-TLPartida = ^TNPartidas;
-
+//TLUsuario= ^TNUsuario;
+TLUsuario = Record
+						q,u:^TNUsuario;
+						end;
 //****************************************************************************************************//
 
 
@@ -98,10 +97,10 @@ Procedure mostrarTableroInicial (board : TSudokuBoard);
 Procedure mostrarTableroParcial (board : TSudokuBoard);
 
 //Muestra los 9 tableros iniciales que se encuentan en el archivo sudoku_boards.dat indicando el nombre y el nivel.
-Procedure mostrarTablerosIniciales(var archivo : TFile);
+Procedure mostrarTablerosIniciales(var archivo : TASudokuBoard);
 
 //Funcion que retorna verdadero si la fila dada esta completa con valores del 1 al 9 sin repetidos.
-Function compruebaFila(board : TSudokuBoard; fila : Integer) : Boolean;
+Function compruebaFila(board : TSudokuBoard; fila,x : Integer) : Boolean;
 
 //Funcion que retorna verdadero si la columna dada esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
@@ -109,39 +108,361 @@ Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
 //Funcion que retorna verdadero si el box dado esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 
-//imprime el menu principal
-procedure menuPrincipal;
+//Acciones y funcion para listas y archivos de usuarios
+//Inicializa la lista de usuario
+procedure iniUsuario(var lista:TLUsuario);
 
-procedure menuUsuario;
+//Verifica que la lista esta inicialzada
+function verIniUsuario(var lista:TLUsuario):boolean;
 
-procedure menuJuego;
+procedure insertarUsuario(var lista:TLUsuario;info:TUsuario);
 
 
+procedure eliminarUsuario(nombre:String;var lista:TLUsuario);
+
+//Busca un usuario por nombre y si lo encuentra lo devuelve por el parametro "encontrado"
+procedure buscarUsuario(nombre:String;var lista:TLUsuario;var encontrado:TUsuario);
+
+//guarda una lista en un archivo de usuarios
+procedure guardarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+
+//Carga los datos del archivo en una lista
+procedure cargarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+
+
+
+
+//Acciones y funcion para listas y archivos de TSudokuBoard
+//Inicializa la lista de SudokuBoard
+procedure iniSudokuBoard(var lista:TLSudokuBoard);
+
+//Verifica que la lista esta inicialzada
+function verIniSudokuBoard(var lista:TLSudokuBoard):boolean;
+
+procedure insertarSudokuBoard(var lista:TLSudokuBoard;info:TSudokuBoard);
+
+
+procedure eliminarSudokuBoard(pos:Integer;var lista:TLSudokuBoard);
+
+//devuelve una nueva lista con los tableros de la dificultad seleccionada
+procedure dificutladSudokuBoard(dif:Nivel;var lista:TLSudokuBoard;var nueva:TLSudokuBoard;var max:Integer);
+
+//guarda una lista en un archivo de SudokuBoards
+procedure guardarSudokuBoard(var lista:TLSudokuBoard;var arch:TASudokuBoard);
+
+//Carga los datos del archivo en una lista
+procedure cargarSudokuBoard(var arch:TASudokuBoard;var lista:TLSudokuBoard);
+
+procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;encontrado:TSudokuBoard);
+
+procedure mostrarSudokuBoard(var lista:TLSudokuBoard;var max:Integer);
 
 Implementation
-procedure menuPrincipal;
+
+//Acciones de lista Usuario
+procedure iniUsuario(var lista:TLUsuario); //Inicializa la lista de usuario
 begin
-	Writeln('Bienvenido, Seleccione una opción:')
-	Writeln('1) Crear usuario.');
-	Writeln('2) Usuario existente.');
-	Writeln('3) Salir.');
+  new(lista.q);
+	new(lista.u);
+	lista.q^.next := lista.u;
+	lista.q^.back := nil;
+	lista.u^.next := nil;
+	lista.u^.back := lista.q;
 end;
-procedure menuUsuario();
+
+function verIniUsuario(var lista:TLUsuario):boolean;//Verifica que la lista esta inicialzada
 begin
-	Writeln('Seleccione una opción:')
-	Writeln('1) Cambiar usuario');
-	Writeln('2) Eliminar usuario');
-	Writeln('3) Cargar partida');
-	Writeln('4) Nueva partida');
-	Writeln('5) Salir');
+  if (lista.q<>nil)then
+    begin
+        verIniUsuario:=true;
+    end;
 end;
-procedure menuJuego;
+
+procedure insertarUsuario(var lista:TLUsuario;info:TUsuario);
+var
+  aux,primero:^TNUsuario;
 begin
-	Writeln('Seleccione una opción:')
-	Writeln('1) Insertar elemento');
-	Writeln('2) Guarda partida.');
-	Writeln('3) Salir.');
+  new(aux);
+  primero:=lista.q^.next;
+  lista.q^.next:=aux;
+  aux^.info:=info;
+  aux^.next:=primero;
 end;
+
+
+procedure eliminarUsuario(nombre:String;var lista:TLUsuario);
+var
+  aux,ant,sig:^TNUsuario;
+begin
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de usuarios no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		while (aux^.next <> nil) and (aux^.info.user <> nombre) do
+		begin
+			aux := aux^.next; //Avanzar
+		end;
+		if (aux^.info.user = nombre) then
+		begin
+			ant:= aux^.back;
+			sig:= aux^.next;
+			dispose(aux);
+			ant^.next := sig;
+			sig^.back := ant;
+		end;
+  end;
+end;
+
+procedure buscarUsuario(nombre:String;var lista:TLUsuario;var encontrado:TUsuario);
+var
+  aux:^TNUsuario;
+begin
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de usuarios no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		while (aux^.next <> nil) and (aux^.info.user <> nombre) do
+		begin
+			aux := aux^.next; //Avanzar
+		end;
+		if (aux^.info.user = nombre) then
+		begin
+			encontrado := aux^.info;
+			write
+		end;
+  end;
+end;
+
+procedure guardarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+var
+  aux:^TNUsuario;
+begin
+	if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de usuarios no tiene registros guardados.');
+  end
+  else
+  begin
+		Rewrite(arch);
+    aux:=lista.q^.next;
+		while (aux^.next <> nil) do
+		begin
+			write(arch,aux^.info);
+			aux := aux^.next; //Avanzar lista
+		end;
+		Close(arch);
+  end;
+end;
+
+procedure cargarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+var
+	usuario:TUsuario;
+begin
+	{$I-}
+		reset(arch);
+	{$I+}
+	if IOResult = 0 then
+	begin
+		while not EOF(arch) do
+		begin
+			read(arch,usuario);
+			insertarUsuario(lista,usuario);
+		end;
+	end;
+	close(arch);
+end;
+
+procedure iniSudokuBoard(var lista:TLSudokuBoard);
+begin
+  new(lista.q);
+	new(lista.u);
+	lista.q^.next := lista.u;
+	lista.q^.back := nil;
+	lista.u^.next := nil;
+	lista.u^.back := lista.q;
+end;
+
+function verIniSudokuBoard(var lista:TLSudokuBoard):boolean;
+begin
+  if (lista.q<>nil)then
+    begin
+        verIniSudokuBoard:=true;
+    end;
+end;
+
+procedure insertarSudokuBoard(var lista:TLSudokuBoard;info:TSudokuBoard);
+var
+  aux,primero:^TNSudokuBoard;
+begin
+  new(aux);
+  primero:=lista.q^.next;
+  lista.q^.next:=aux;
+  aux^.info:=info;
+  aux^.next:=primero;
+end;
+
+
+procedure eliminarSudokuBoard(pos:Integer;var lista:TLSudokuBoard);
+var
+  aux,ant,sig:^TNSudokuBoard;
+	i:Integer;
+begin
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de tableros no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		i :=1;
+		while (aux^.next <> nil) and (i < pos) do
+		begin
+			aux := aux^.next; //Avanzar
+		end;
+		if (i = pos) then
+		begin
+			ant:= aux^.back;
+			sig:= aux^.next;
+			dispose(aux);
+			ant^.next := sig;
+			sig^.back := ant;
+		end;
+  end;
+end;
+//devuelve una nueva lista con los tableros de la dificultad seleccionada
+procedure dificutladSudokuBoard(dif:Nivel;var lista:TLSudokuBoard;var nueva:TLSudokuBoard;var max:Integer);
+var
+  aux:^TNSudokuBoard;
+begin
+
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de tableros no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		max:=0;
+		while (aux^.next <> nil) do
+		begin
+			if (aux^.info.nivel = dif) then
+			begin
+				insertarSudokuBoard(nueva,aux^.info);
+				max+=1;
+			end;
+			aux := aux^.next; //Avanzar
+		end;
+  end;
+end;
+
+procedure guardarSudokuBoard(var lista:TLSudokuBoard;var arch:TASudokuBoard);
+var
+  aux:^TNSudokuBoard;
+begin
+	if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de tableros no tiene registros guardados.');
+  end
+  else
+  begin
+		Rewrite(arch);
+    aux:=lista.q^.next;
+		while (aux^.next <> nil) do
+		begin
+			write(arch,aux^.info);
+			aux := aux^.next; //Avanzar lista
+		end;
+		Close(arch);
+  end;
+end;
+
+procedure cargarSudokuBoard(var arch:TASudokuBoard;var lista:TLSudokuBoard);
+var
+	tablero:TSudokuBoard;
+begin
+	{$I-}
+		reset(arch);
+	{$I+}
+	if IOResult = 0 then
+	begin
+		while not EOF(arch) do
+		begin
+			read(arch,tablero);
+			insertarSudokuBoard(lista,tablero);
+		end;
+	end;
+	close(arch);
+end;
+
+procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;encontrado:TSudokuBoard);
+var
+  aux:^TNSudokuBoard;
+	i:Integer;
+begin
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de tableros no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		i :=1;
+		while (aux^.next <> nil) and (i < pos) do
+		begin
+			aux := aux^.next; //Avanzar
+		end;
+		if (i = pos) then
+		begin
+			encontrado := aux^.info;
+		end;
+  end;
+end;
+
+procedure mostrarSudokuBoard(var lista:TLSudokuBoard;var max:Integer);
+var
+  aux:^TNSudokuBoard;
+begin
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de tableros no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		max:=1;
+		while (aux^.next <> nil) do
+		begin
+			if(aux^.info.completado) then
+			begin
+				textColor(green);
+			end
+			else
+			begin
+				textColor(blue);
+			end;
+			Writeln(max,') ',aux^.info.nombre,'| Dificultad: ',aux^.info.nivel);
+			aux := aux^.next; //Avanzar
+			max+=1;
+			textColor(LightGray);
+		end;
+  end;
+end;
+
+
+
+
+
+
+
+
+
+
 
 //Dado un tablero y una posicion de la matriz dice si ese campo se corresponde a un valor inicial o no.
 Function isInitialValue(board : TSudokuBoard; i, j : Integer) : Boolean;
@@ -220,7 +541,7 @@ begin
 end;
 
 //Muestra los 9 tableros iniciales que se encuentan en el archivo sudoku_boards.dat indicando el nombre y el nivel.
-Procedure mostrarTablerosIniciales(var archivo : TFile);
+Procedure mostrarTablerosIniciales(var archivo : TASudokuBoard);
 var
 	board : TSudokuBoard;
 begin
@@ -249,6 +570,7 @@ var
 begin
 	repetido := false;
 	if(x <> 9) then
+	begin
 		i:=x+1;
 		repeat
 			if(board.sudokuParcial[x,fila] = board.sudokuParcial[i,fila]) then
@@ -258,11 +580,12 @@ begin
 			i+=1;
 		until (i=9) or (repetido = true);
 		if(repetido)then
-			compruebaFila := false;
+			compruebaFila := false
 		else
 		begin
 			compruebaFila(board,fila,x+1);
 		end;
+	end
 	else
 	begin
 		compruebaFila := true;
@@ -272,20 +595,22 @@ end;
 //Funcion que retorna verdadero si la columna dada esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
 var
-	i:Integer;
+	i,j:Integer;
 	repetido:Boolean;
 	conjunto:TConValidos;
 begin
 	repetido := false;
-	conjunto := [];//con inicializado
 	for i := 1 to 9 do
 	begin
-		conjunto += board.sudokuParcial[columna,y]
+		conjunto[i] := board.sudokuParcial[columna,i]// Y GRIEGA
 	end;
 	i:=1;
 	repeat
-		if not (i in conjunto) then
-			repetido:=true;
+		for j := 1 to 9 do
+		begin
+			if(i <> conjunto[j]) then
+				repetido := true;
+		end;
 		i+=1;
 	until (i > 9) or (repetido);
 	compruebaColumna := not repetido;
@@ -303,31 +628,33 @@ end;
 }
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 var
-	filaBox,colBox,i,j,colElem,filaElem: integer;
+	i,j,k,colElem,filaElem: integer;
 	conjunto:TConValidos;
 	repetido:boolean;
 begin
 	repetido:=false;
-	filaElem:=3*((box + 2) mod 3)+1;//
-																	// Primer elemento del box
-	colElem:=3*((box + 2) div 3-1)+1//
+	filaElem:=3*((box + 2) mod 3)+1; //
+																	 // Primer elemento del box
+	colElem:=3*((box + 2) div 3-1)+1;//
 	i:=colElem;//contadores
 	j:=filaElem;
-	conjunto:=[];
+	k:=1;
 	repeat
 		repeat
-			conjunto+:board.sudokuParcial[i,j];//se agrega el elemento al conjunto
+			conjunto[k] := board.sudokuParcial[i,j];//se agrega el elemento al conjunto
+			k+=1;
 			j+=1;
 		until (j>colElem+2);
 		i+=1;
 	until(i>filaElem+2);
 	i:=1;
 	repeat
-		if not (i in conjunto) then //si algun numero de 1 a 9 no está en el conjunto
-			repetido:=true;//se hace verdadera la variable repetido
-		i+=1;
+		for j := 1 to 9 do
+		begin
+			if(i <> conjunto[j]) then
+				repetido := true;
+		end;
 	until (i > 9) or (repetido);
 	compruebaBox:= not repetido;//si hay valores repetidos devuelve falso
 end;
-
 End.
