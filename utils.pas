@@ -52,31 +52,37 @@ TSudokuBoard = Record
 //El archivo donde se encuentran guardados los tableros iniciales.
 TFile = file of TSudokuBoard;
 
+//Tipo registro usuario
 TUsuario = Record
 				nombre,apellido:String;s
 				end;
 
+//Tipo archivo de usuario
 TAUsuario = file of TUsuario;
 
+//Tipo reg. de partida
 TPartida = Record
 				nombre:String;
 				tablero:TSudokuBoard;
 				end;
-
+//Tipo archivo de partida
 TAPartida= file of TPartida;
 
+//TNodo de usuario
 TNusuario = Record
 					info: TUsuairo;
 					next: ^TNUsuatio;
 					end;
 
+//Tipo puntero de TNodo de usaurio(TLista de usuario)
 TLUsuario= ^TNUsuairo;
 
+//TNodo de partidas
 TNPartidas = Record
 					info: TUsuairo;
 					next: ^TNUsuatio;
 					end;
-
+//Tipo puntero a TNodo de partida
 TLPartida = ^TNPartidas;
 
 //****************************************************************************************************//
@@ -103,6 +109,7 @@ Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
 //Funcion que retorna verdadero si el box dado esta completa con valores del 1 al 9 sin repetidos.
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 
+//imprime el menu principal
 procedure menuPrincipal;
 
 procedure menuUsuario;
@@ -114,12 +121,14 @@ procedure menuJuego;
 Implementation
 procedure menuPrincipal;
 begin
+	Writeln('Bienvenido, Seleccione una opción:')
 	Writeln('1) Crear usuario.');
 	Writeln('2) Usuario existente.');
 	Writeln('3) Salir.');
 end;
-procedure menuUsuario;
+procedure menuUsuario();
 begin
+	Writeln('Seleccione una opción:')
 	Writeln('1) Cambiar usuario');
 	Writeln('2) Eliminar usuario');
 	Writeln('3) Cargar partida');
@@ -128,6 +137,7 @@ begin
 end;
 procedure menuJuego;
 begin
+	Writeln('Seleccione una opción:')
 	Writeln('1) Insertar elemento');
 	Writeln('2) Guarda partida.');
 	Writeln('3) Salir.');
@@ -282,6 +292,15 @@ begin
 end;
 
 //Funcion que retorna verdadero si el box dado esta completa con valores del 1 al 9 sin repetidos.
+{
+|---|---|---|
+| 1 | 2 | 3 |
+|---|---|---|
+| 4 | 5 | 6 |
+|---|---|---|
+| 7 | 8 | 9 |
+|---|---|---|
+}
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 var
 	filaBox,colBox,i,j,colElem,filaElem: integer;
@@ -289,27 +308,26 @@ var
 	repetido:boolean;
 begin
 	repetido:=false;
-	filaBox = (box + 2) div 3;
-	colBox= ((box + 2) mod 3) + 1;
-	filaElem:=3*(colBox-1)+1;
-	colElem:=3*(filaBox-1)+1;
+	filaElem:=3*((box + 2) mod 3)+1;//
+																	// Primer elemento del box
+	colElem:=3*((box + 2) div 3-1)+1//
+	i:=colElem;//contadores
 	j:=filaElem;
-	i:=colElem;
 	conjunto:=[];
 	repeat
 		repeat
-			conjunto+:board.sudokuParcial[i,j];
+			conjunto+:board.sudokuParcial[i,j];//se agrega el elemento al conjunto
 			j+=1;
 		until (j>colElem+2);
 		i+=1;
 	until(i>filaElem+2);
 	i:=1;
 	repeat
-		if not (i in conjunto) then
-			repetido:=true;
+		if not (i in conjunto) then //si algun numero de 1 a 9 no está en el conjunto
+			repetido:=true;//se hace verdadera la variable repetido
 		i+=1;
 	until (i > 9) or (repetido);
-	compruebaBox:= not repetido;
+	compruebaBox:= not repetido;//si hay valores repetidos devuelve falso
 end;
 
 End.
