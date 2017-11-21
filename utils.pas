@@ -573,29 +573,33 @@ end;
 Function compruebaFila(board : TSudokuBoard; fila,x : Integer) : Boolean;
 var
 	repetido:Boolean;
-	i:Integer;
+	j:integer;
 begin
 	repetido := false;
-	if(x <> 9) then
+	if(x = 9) then
 	begin
-		i:=x+1;
-		repeat
-			if(board.sudokuParcial[x,fila] = board.sudokuParcial[i,fila]) then
-			begin
-				repetido := true;
-			end;
-			i+=1;
-		until (i=9) or (repetido = true);
-		if(repetido)then
-			compruebaFila := false
-		else
-		begin
-			compruebaFila(board,fila,x+1);
-		end;
+		compruebaFila:=true;
 	end
 	else
 	begin
-		compruebaFila := true;
+		j:=x+1;
+		repeat
+			if(board.sudokuParcial[fila,x] = board.sudokuParcial[fila,j]) or (board.sudokuParcial[fila,x] = 0) or (board.sudokuParcial[fila,j] = 0)then
+			begin
+				repetido := true;
+			end;
+			writeln(board.sudokuParcial[fila,x],',',board.sudokuParcial[fila,j]);
+			writeln(repetido);
+			j+=1;
+		until (j>9) or repetido;
+		if(repetido) then
+		begin
+			compruebaFila := false;
+		end
+		else
+		begin
+			compruebaFila := compruebaFila(board,fila,x+1);
+		end;
 	end;
 end;
 
@@ -607,19 +611,18 @@ var
 	conjunto:TConValidos;
 begin
 	repetido := false;
-	for i := 1 to 9 do
-	begin
-		conjunto[i] := board.sudokuParcial[columna,i]// Y GRIEGA
-	end;
 	i:=1;
 	repeat
-		for j := 1 to 9 do
-		begin
-			if(i <> conjunto[j]) then
+		j:=i+1;
+		repeat
+			if(board.sudokuParcial[i,columna] = board.sudokuParcial[j,columna]) or (board.sudokuParcial[i,columna] = 0) then
+			begin
 				repetido := true;
-		end;
+			end;
+			j+=1;
+		until (j>9) or repetido;
 		i+=1;
-	until (i > 9) or (repetido);
+	until (i>9) or repetido;
 	compruebaColumna := not repetido;
 end;
 

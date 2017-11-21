@@ -14,6 +14,8 @@ procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
 procedure eliminarJugador(info:TUsuario);
 procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
 procedure insertarXY(var tabJugar:TSudokuBoard);
+procedure consultarFila(tabJugar:TSudokuBoard);
+procedure consultarColumna(tabJugar:TSudokuBoard);
 
 implementation
 procedure mostrarMenuPrincipal;
@@ -259,7 +261,6 @@ end;
 procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
 var
   opcion:Char;
-  i,j:Integer;
 begin
   tabJugar.sudokuParcial := tabJugar.sudokuInicial;
   mostrarMenuJuego();
@@ -274,9 +275,9 @@ begin
 
     case opcion of
       '1': insertarXY(tabJugar);
-      (*'2': consultarFila();
-      '3': consultarColumna();
-      '4': consultarBox();
+      '2': consultarFila(tabJugar);
+      '3': consultarColumna(tabJugar);
+      (*'4': consultarBox();
       '5': consultarTablero();
       '6': guardarPartida();*)
     end;
@@ -292,36 +293,78 @@ end;
 
 procedure insertarXY(var tabJugar:TSudokuBoard);
 var
-  x,y,valor:Integer;
+  i,j,valor:Integer;
 begin
-  x:=0;//valor para que entre al ciclo la primera vez
-  y:=0;//valor para que entre al ciclo la primera vez
+  i:=0;//valor para que entre al ciclo la primera vez
+  j:=0;//valor para que entre al ciclo la primera vez
   valor:=-1;//valor para que entre al ciclo la primera vez
 
-  while (x < 1) or (x > 9) do
+  while (j < 1) or (j > 9) do
   begin
     Write('Ingrese la coordenada x (Entre 1 y 9): ');
-    Readln(x);
+    Readln(j);
   end;
-  while (y < 1) or (y > 9) do
+  while (i < 1) or (i > 9) do
   begin
     Write('Ingrese la coordenada y (Entre 1 y 9): ');
-    Readln(y);
+    Readln(i);
   end;
+
   while (valor < 0) or (valor > 9) do
   begin
     Write('Ingrese el valor a insertar (Entre 0 y 9): ');
     Readln(valor);
   end;
 
-  if not (isInitialValue(tabJugar,x,y)) then
+  if not (isInitialValue(tabJugar,i,j)) then
   begin
-    tabJugar.sudokuParcial[x,y] := valor;
+    tabJugar.sudokuParcial[i,j] := valor;
   end
   else
   begin
     writeln('El valor solicitado no se puede modificar (Presione una tecla para contiuar).');
     ReadKey;//pausa
   end;
+end;
+
+procedure consultarFila(tabJugar:TSudokuBoard);
+var
+  i:Integer;
+begin
+  i:=0;
+  while (i < 1) or (i > 9) do
+  begin
+    Write('Ingrese la coordenada y (Entre 1 y 9): ');
+    Readln(i);
+  end;
+  if(compruebaFila(tabJugar,i,1))then
+  begin
+    Writeln('La fila individualmente es valida.');
+  end
+  else
+  begin
+    Writeln('La fila NO es valida.');
+  end;
+  ReadKey;
+end;
+procedure consultarColumna(tabJugar:TSudokuBoard);
+var
+  j:Integer;
+begin
+  j:=0;
+  while (j < 1) or (j > 9) do
+  begin
+    Write('Ingrese la coordenada x (Entre 1 y 9): ');
+    Readln(j);
+  end;
+  if(compruebaColumna(tabJugar,j))then
+  begin
+    Writeln('La columna individualmente es valida.');
+  end
+  else
+  begin
+    Writeln('La columna NO es valida.');
+  end;
+  ReadKey;
 end;
 end.
