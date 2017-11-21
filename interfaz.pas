@@ -24,7 +24,7 @@ implementation
 procedure mostrarMenuPrincipal;
 begin
   ClrScr;
-	Writeln('------- SUDOKU PA LO PIBE -------');
+	Writeln('------- SUDOKU -------');
 	Writeln('Seleccione una opción:');
 	Writeln('1) Crear usuario.');
 	Writeln('2) Usuario existente.');
