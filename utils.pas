@@ -322,7 +322,7 @@ begin
 		sig := aux^.next;
 
 		i :=1;
-		while (aux^.next <> nil) and (i < pos) do
+		while (aux <> nil) and (i < pos) do
 		begin
 			ant:= ant^.next; //Avanzar
 			aux:=ant^.next;
@@ -349,7 +349,7 @@ begin
   begin
     aux:=lista.q^.next;
 		max:=0;
-		while (aux^.next <> nil) do
+		while (aux <> nil) do
 		begin
 			if (aux^.info.nivel = dif) then
 			begin
@@ -373,7 +373,7 @@ begin
   begin
 		Rewrite(arch);
     aux:=lista.q^.next;
-		while (aux^.next <> nil) do
+		while (aux <> nil) do
 		begin
 			write(arch,aux^.info);
 			aux := aux^.next; //Avanzar lista
@@ -413,7 +413,7 @@ begin
   begin
     aux:= lista.q^.next;
 		i:=1;
-		while (aux^.next <> nil) and (i < pos) do
+		while (aux <> nil) and (i < pos) do
 		begin
 			i+=1;
 			aux:= aux^.next;
@@ -434,7 +434,7 @@ begin
   begin
     aux:=lista.q^.next;
 		max:=1;
-		while (aux^.next <> nil) do
+		while (aux <> nil) do
 		begin
 			Writeln(max,') ',aux^.info.nombre,'| Dificultad: ',aux^.info.nivel);
 			aux := aux^.next; //Avanzar

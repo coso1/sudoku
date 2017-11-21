@@ -219,6 +219,7 @@ begin
   buscarSudokuBoard(Random(max)+1,nueva,tabJugar);
   Write('Nombre de la partida: ');
  readln(tabJugar.nombre);
+ tabJugar.sudokuParcial := tabJugar.sudokuInicial;
 
 end;
 
@@ -265,7 +266,7 @@ procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
 var
   opcion:Char;
 begin
-  tabJugar.sudokuParcial := tabJugar.sudokuInicial;
+
   mostrarMenuJuego();
   Writeln('Nombre: ',tabJugar.nombre);
   Writeln('Dificultad: ',tabJugar.nivel);
@@ -425,14 +426,15 @@ end;
 
 procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario);
 var
-  archPartidasUsuario:TASudokuBoard;
-  listaPartidasUsuario:TLSudokuBoard;
+  archivo:TASudokuBoard;
+  lista:TLSudokuBoard;
 begin
-  Assign(archPartidasUsuario,'datos/'+info.user+'.dat');
-  iniSudokuBoard(listaPartidasUsuario);
-  cargarSudokuBoard(archPartidasUsuario,listaPartidasUsuario);
-  insertarSudokuBoard(listaPartidasUsuario,tabJugar);
-  guardarSudokuBoard(listaPartidasUsuario,archPartidasUsuario);
+  Assign(archivo,'datos/'+info.user+'.dat');
+  iniSudokuBoard(lista);
+  cargarSudokuBoard(archivo,lista);
+  insertarSudokuBoard(lista,tabJugar);
+
+  guardarSudokuBoard(lista,archivo);
   Writeln('Partida guardad.');
   ReadKey;
 end;
