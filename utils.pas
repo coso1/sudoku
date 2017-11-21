@@ -447,16 +447,6 @@ begin
   end;
 end;
 
-
-
-
-
-
-
-
-
-
-
 //Dado un tablero y una posicion de la matriz dice si ese campo se corresponde a un valor inicial o no.
 Function isInitialValue(board : TSudokuBoard; i, j : Integer) : Boolean;
 begin
