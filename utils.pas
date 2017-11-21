@@ -49,7 +49,6 @@ TSudokuBoard = Record
 					sudokuParcial : TSudokuValues;
 					nivel : Nivel;
 					nombre : String;
-					completado:Boolean; //indica si esta completado
 				end;
 
 
@@ -441,18 +440,9 @@ begin
 		max:=1;
 		while (aux^.next <> nil) do
 		begin
-			if(aux^.info.completado) then
-			begin
-				textColor(green);
-			end
-			else
-			begin
-				textColor(blue);
-			end;
 			Writeln(max,') ',aux^.info.nombre,'| Dificultad: ',aux^.info.nivel);
 			aux := aux^.next; //Avanzar
 			max+=1;
-			textColor(LightGray);
 		end;
   end;
 end;
@@ -572,7 +562,7 @@ begin
 		Writeln ();
 		Writeln ('****************************');
 		Writeln ('Tablero : ', board.nombre);
-		Writeln ('Dificultad: ', board.nivel);
+	//Writeln ('Dificultad: ', board.nivel);
 		mostrarTableroInicial(board);
 		Writeln ('****************************');
 	end;

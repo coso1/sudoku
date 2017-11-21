@@ -13,6 +13,7 @@ procedure nuevaPartida(var tabJugar:TSudokuBoard);
 procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
 procedure eliminarJugador(info:TUsuario);
 procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
+procedure insertarXY(tabJugar:TSudokuBoard);
 
 implementation
 procedure mostrarMenuPrincipal;
@@ -22,7 +23,7 @@ begin
 	Writeln('Seleccione una opción:');
 	Writeln('1) Crear usuario.');
 	Writeln('2) Usuario existente.');
-	Writeln('3) Salir.');
+	Writeln('3) Salir del juego.');
   Write('Opcion: ');
 end;
 procedure mostrarMenuUsuario;
@@ -32,7 +33,7 @@ begin
   Writeln('1) Nueva partida');
 	Writeln('2) Cargar partida');
   Writeln('3) Eliminar usuario');
-	Writeln('4) Salir');
+	Writeln('4) Cambiar de usuario/Cerrar sesion');
   Write('Opcion: ');
 end;
 procedure mostrarMenuJuego;
@@ -40,8 +41,14 @@ begin
   ClrScr;
 	Writeln('Seleccione una opción:');
 	Writeln('1) Insertar elemento');
-	Writeln('2) Guarda partida.');
-	Writeln('3) Salir.');
+  Writeln('2) Consultar fila.');
+  Writeln('3) Consultar columna.');
+  Writeln('4) Consultar box.');
+  Writeln('5) Consultar tablero.');
+  Writeln('6) Guardar partida.');
+	Writeln('7) Salir de la partida.');
+
+
   Write('Opcion: ');
 end;
 procedure MenuPrincipal();
@@ -252,7 +259,73 @@ begin
 end;
 
 procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
+var
+  opcion:Char;
+  i,j:Integer;
 begin
+  mostrarMenuJuego();
+  mostrarTableroParcial(tabJugar);
+  for i := 1 to 9 do
+  begin
+    for j := 1 to 9 do
+    begin
+      Write(tabJugar.sudokuParcial[i,j]);
+    end;
+    writeln();
+  end;
+  readln(opcion);
 
+  while opcion <> '7' do
+  begin
+
+    case opcion of
+      '1': insertarXY(tabJugar);
+      (*'2': consultarFila();
+      '3': consultarColumna();
+      '4': consultarBox();
+      '5': consultarTablero();
+      '6': guardarPartida();*)
+    end;
+
+    mostrarMenuJuego();
+
+    mostrarTableroParcial(tabJugar);
+    readln(opcion);
+  end;
+end;
+
+procedure insertarXY(tabJugar:TSudokuBoard);
+var
+  x,y,valor:Integer;
+begin
+  x:=0;//valor para que entre al ciclo la primera vez
+  y:=0;//valor para que entre al ciclo la primera vez
+  valor:=-1;//valor para que entre al ciclo la primera vez
+
+  while (x < 1) or (x > 9) do
+  begin
+    Write('Ingrese la coordenada x (Entre 1 y 9): ');
+    Readln(x);
+  end;
+  while (x < 1) or (x > 9) do
+  begin
+    Write('Ingrese la coordenada y (Entre 1 y 9): ');
+    Readln(y);
+  end;
+  while (valor < 0) or (valor > 9) do
+  begin
+    Write('Ingrese el valor a insertar (Entre 0 y 9): ');
+    Readln(valor);
+  end;
+
+  if not (isInitialValue(tabJugar,x,y)) then
+  begin
+    tabJugar.sudokuParcial[x,y] := valor;
+  end
+  else
+  begin
+    writeln('El valor solicitado no se puede modificar (Presione una tecla para contiuar).');
+    ReadKey;//pausa
+  end;
 end;
 end.
