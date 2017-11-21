@@ -114,9 +114,10 @@ procedure iniUsuario(var lista:TLUsuario);
 //Verifica que la lista esta inicialzada
 function verIniUsuario(var lista:TLUsuario):boolean;
 
+//agrega un TUsuario al principio de la lista de TUsuario
 procedure insertarUsuario(var lista:TLUsuario;info:TUsuario);
 
-
+//Elimina un TUsuario de la lista por su nombre
 procedure eliminarUsuario(info:TUsuario;var lista:TLUsuario);
 
 //Busca un usuario por nombre y si lo encuentra lo devuelve por el parametro "encontrado"
@@ -138,12 +139,13 @@ procedure iniSudokuBoard(var lista:TLSudokuBoard);
 //Verifica que la lista esta inicialzada
 function verIniSudokuBoard(var lista:TLSudokuBoard):boolean;
 
+//agrega un TSudokuBoard al principio de la lista de TSudokuBoard
 procedure insertarSudokuBoard(var lista:TLSudokuBoard;info:TSudokuBoard);
 
-
+//Elimina un TSudokuBoard de la lista por su posicion
 procedure eliminarSudokuBoard(pos:Integer;var lista:TLSudokuBoard);
 
-//devuelve una nueva lista con los tableros de la dificultad seleccionada
+//devuelve una nueva lista con los tableros de la dificultad seleccionada y devuelve la cantidad de elementos en el parametro "max"
 procedure dificutladSudokuBoard(dif:Nivel;var lista:TLSudokuBoard;var nueva:TLSudokuBoard;var max:Integer);
 
 //guarda una lista en un archivo de SudokuBoards
@@ -152,10 +154,12 @@ procedure guardarSudokuBoard(var lista:TLSudokuBoard;var arch:TASudokuBoard);
 //Carga los datos del archivo en una lista
 procedure cargarSudokuBoard(var arch:TASudokuBoard;var lista:TLSudokuBoard);
 
+//busca un TSudokuBoard en una lista y lo devuelve en el parametro encontrado
 procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;var encontrado:TSudokuBoard);
 
+//muestra los elementos de la lista indexados y devuelve la cantidad de elementos en "max"
 procedure mostrarSudokuBoard(var lista:TLSudokuBoard;var max:Integer);
-procedure mostrarUsuario(var lista:TLUsuario);
+
 
 Implementation
 
@@ -182,7 +186,7 @@ procedure insertarUsuario(var lista:TLUsuario;info:TUsuario);
 var
   aux,primero:^TNUsuario;
 begin
-  new(aux);
+  new(aux);//crea el tnodo para aux y establece las flechas
   primero:=lista.q^.next;
   lista.q^.next:=aux;
   aux^.info:=info;
@@ -444,24 +448,7 @@ begin
 end;
 
 
-procedure mostrarUsuario(var lista:TLUsuario);
-var
-  aux:^TNUsuario;
-begin
-  if (lista.q^.next=nil) then
-  begin
-    writeln('La lista de tableros no tiene registros guardados.');
-  end
-  else
-  begin
-    aux:=lista.q^.next;
-		while (aux^.next <> nil) do
-		begin
-			Writeln(aux^.info.user,aux^.info.pass);
-			aux := aux^.next; //Avanzar
-		end;
-  end;
-end;
+
 
 
 
