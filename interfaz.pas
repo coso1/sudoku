@@ -16,6 +16,7 @@ procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
 procedure insertarXY(var tabJugar:TSudokuBoard);
 procedure consultarFila(tabJugar:TSudokuBoard);
 procedure consultarColumna(tabJugar:TSudokuBoard);
+procedure consultarBox(tabJugar:TSudokuBoard);
 
 implementation
 procedure mostrarMenuPrincipal;
@@ -277,8 +278,8 @@ begin
       '1': insertarXY(tabJugar);
       '2': consultarFila(tabJugar);
       '3': consultarColumna(tabJugar);
-      (*'4': consultarBox();
-      '5': consultarTablero();
+      '4': consultarBox(tabJugar);
+      (*'5': consultarTablero();
       '6': guardarPartida();*)
     end;
 
@@ -367,4 +368,33 @@ begin
   end;
   ReadKey;
 end;
+
+procedure consultarBox(tabJugar:TSudokuBoard);
+var
+  box:Integer;
+begin
+  box:=0;
+  while (box < 1) or (box > 9) do
+  begin
+    writeln('|---|---|---|');
+    writeln('| 1 | 2 | 3 |');
+    writeln('|---|---|---|');
+    writeln('| 4 | 5 | 6 |');
+    writeln('|---|---|---|');
+    writeln('| 7 | 8 | 9 |');
+    writeln('|---|---|---|');
+    Write('Ingrese el numero del box (Entre 1 y 9): ');
+    Readln(box);
+  end;
+  if(compruebaBox(tabJugar,box))then
+  begin
+    Writeln('El bloque individualmente es valido.');
+  end
+  else
+  begin
+    Writeln('El bloque NO es valido.');
+  end;
+  ReadKey;
+end;
+
 end.

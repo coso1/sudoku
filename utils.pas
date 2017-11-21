@@ -419,7 +419,6 @@ begin
 			aux:= aux^.next;
 		end;
 		encontrado := aux^.info;
-		ReadKey;
   end;
 end;
 
@@ -615,7 +614,7 @@ begin
 	repeat
 		j:=i+1;
 		repeat
-			if(board.sudokuParcial[i,columna] = board.sudokuParcial[j,columna]) or (board.sudokuParcial[i,columna] = 0) then
+			if(board.sudokuParcial[i,columna] = board.sudokuParcial[j,columna]) or (board.sudokuParcial[i,columna] = 0) or (board.sudokuParcial[j,columna] = 0) then
 			begin
 				repetido := true;
 			end;
@@ -639,32 +638,46 @@ end;
 Function compruebaBox(board : TSudokuBoard; box : Integer) : Boolean;
 var
 	i,j,k,colElem,filaElem: integer;
-	conjunto:TConValidos;
 	repetido:boolean;
+	elemento:array[1..9] of Integer;
 begin
-	repetido:=false;
-	filaElem:=3*((box + 2) mod 3)+1; //
-																	 // Primer elemento del box
-	colElem:=3*((box + 2) div 3-1)+1;//
-	i:=colElem;//contadores
-	j:=filaElem;
 	k:=1;
-	repeat
-		repeat
-			conjunto[k] := board.sudokuParcial[i,j];//se agrega el elemento al conjunto
-			k+=1;
-			j+=1;
-		until (j>colElem+2);
-		i+=1;
-	until(i>filaElem+2);
-	i:=1;
-	repeat
-		for j := 1 to 9 do
+	repetido:=false;
+	colElem:=3*((box + 2) mod 3)+1; //
+																	 // Primer elemento del box
+	filaElem:=3*((box + 2) div 3-1)+1;//
+	for i := filaElem to filaElem+2 do
+	begin
+		for j := colElem to colElem+2 do
 		begin
-			if(i <> conjunto[j]) then
+			if(board.sudokuParcial[i,j] = 0)then
+			begin
 				repetido := true;
+			end
+			else
+			begin
+				elemento[k] := board.sudokuParcial[i,j];
+				k+=1;
+			end;
 		end;
-	until (i > 9) or (repetido);
+	end;
+
+	if not (repetido) then //si no encontro ningun cero
+	begin
+		i:=1;
+		repeat
+			j:= i+1;
+			repeat
+				if(elemento[i] = elemento[j]) then
+				begin
+					repetido := true;
+				end;
+				j+=1;
+			until (j = 10) or repetido;
+			i+=1;
+		until (i=9) or repetido;
+	end;
+
 	compruebaBox:= not repetido;//si hay valores repetidos devuelve falso
 end;
 End.
