@@ -57,11 +57,11 @@ TASudokuBoard = file of TSudokuBoard;
 
 TNSudokuBoard = Record
 					info: TSudokuBoard;
-					next,back: ^TNSudokuBoard;
+					next: ^TNSudokuBoard;
 					end;
 
 TLSudokuBoard = Record
-						q,u:^TNSudokuBoard;
+						q:^TNSudokuBoard;
 						end;
 //Tipo registro usuario
 TUsuario = Record
@@ -152,7 +152,7 @@ procedure guardarSudokuBoard(var lista:TLSudokuBoard;var arch:TASudokuBoard);
 //Carga los datos del archivo en una lista
 procedure cargarSudokuBoard(var arch:TASudokuBoard;var lista:TLSudokuBoard);
 
-procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;encontrado:TSudokuBoard);
+procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;var encontrado:TSudokuBoard);
 
 procedure mostrarSudokuBoard(var lista:TLSudokuBoard;var max:Integer);
 procedure mostrarUsuario(var lista:TLUsuario);
@@ -283,11 +283,7 @@ end;
 procedure iniSudokuBoard(var lista:TLSudokuBoard);
 begin
   new(lista.q);
-	new(lista.u);
-	lista.q^.next := lista.u;
-	lista.q^.back := nil;
-	lista.u^.next := nil;
-	lista.u^.back := lista.q;
+
 end;
 
 function verIniSudokuBoard(var lista:TLSudokuBoard):boolean;
@@ -304,9 +300,9 @@ var
 begin
   new(aux);
   primero:=lista.q^.next;
-  lista.q^.next:=aux;
-  aux^.info:=info;
-  aux^.next:=primero;
+	lista.q^.next := aux;
+	aux^.next := primero;
+	aux^.info := info;
 end;
 
 
@@ -321,19 +317,21 @@ begin
   end
   else
   begin
-    aux:=lista.q^.next;
+		ant:= lista.q;
+    aux:=ant^.next;
+		sig := aux^.next;
+
 		i :=1;
 		while (aux^.next <> nil) and (i < pos) do
 		begin
-			aux := aux^.next; //Avanzar
+			ant:= ant^.next; //Avanzar
+			aux:=ant^.next;
+			sig := aux^.next;
 		end;
 		if (i = pos) then
 		begin
-			ant:= aux^.back;
-			sig:= aux^.next;
 			dispose(aux);
 			ant^.next := sig;
-			sig^.back := ant;
 		end;
   end;
 end;
@@ -402,7 +400,7 @@ begin
 	close(arch);
 end;
 
-procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;encontrado:TSudokuBoard);
+procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;var encontrado:TSudokuBoard);
 var
   aux:^TNSudokuBoard;
 	i:Integer;
@@ -413,16 +411,15 @@ begin
   end
   else
   begin
-    aux:=lista.q^.next;
-		i :=1;
+    aux:= lista.q^.next;
+		i:=1;
 		while (aux^.next <> nil) and (i < pos) do
 		begin
-			aux := aux^.next; //Avanzar
+			i+=1;
+			aux:= aux^.next;
 		end;
-		if (i = pos) then
-		begin
-			encontrado := aux^.info;
-		end;
+		encontrado := aux^.info;
+		ReadKey;
   end;
 end;
 
@@ -562,7 +559,7 @@ begin
 		Writeln ();
 		Writeln ('****************************');
 		Writeln ('Tablero : ', board.nombre);
-	//Writeln ('Dificultad: ', board.nivel);
+	  Writeln ('Dificultad: ', board.nivel);
 		mostrarTableroInicial(board);
 		Writeln ('****************************');
 	end;

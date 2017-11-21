@@ -13,7 +13,7 @@ procedure nuevaPartida(var tabJugar:TSudokuBoard);
 procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
 procedure eliminarJugador(info:TUsuario);
 procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
-procedure insertarXY(tabJugar:TSudokuBoard);
+procedure insertarXY(var tabJugar:TSudokuBoard);
 
 implementation
 procedure mostrarMenuPrincipal;
@@ -47,9 +47,6 @@ begin
   Writeln('5) Consultar tablero.');
   Writeln('6) Guardar partida.');
 	Writeln('7) Salir de la partida.');
-
-
-  Write('Opcion: ');
 end;
 procedure MenuPrincipal();
 var
@@ -216,7 +213,8 @@ begin
   dificutladSudokuBoard(dificultad,completa,nueva,max);
   buscarSudokuBoard(Random(max)+1,nueva,tabJugar);
   Write('Nombre de la partida: ');
-  readln(tabJugar.nombre);
+ readln(tabJugar.nombre);
+
 end;
 
 procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
@@ -263,16 +261,12 @@ var
   opcion:Char;
   i,j:Integer;
 begin
+  tabJugar.sudokuParcial := tabJugar.sudokuInicial;
   mostrarMenuJuego();
+  Writeln('Nombre: ',tabJugar.nombre);
+  Writeln('Dificultad: ',tabJugar.nivel);
   mostrarTableroParcial(tabJugar);
-  for i := 1 to 9 do
-  begin
-    for j := 1 to 9 do
-    begin
-      Write(tabJugar.sudokuParcial[i,j]);
-    end;
-    writeln();
-  end;
+  Write('Opcion: ');
   readln(opcion);
 
   while opcion <> '7' do
@@ -288,13 +282,15 @@ begin
     end;
 
     mostrarMenuJuego();
-
+    Writeln('Nombre: ',tabJugar.nombre);
+    Writeln('Dificultad: ',tabJugar.nivel);
     mostrarTableroParcial(tabJugar);
+    Write('Opcion: ');
     readln(opcion);
   end;
 end;
 
-procedure insertarXY(tabJugar:TSudokuBoard);
+procedure insertarXY(var tabJugar:TSudokuBoard);
 var
   x,y,valor:Integer;
 begin
@@ -307,7 +303,7 @@ begin
     Write('Ingrese la coordenada x (Entre 1 y 9): ');
     Readln(x);
   end;
-  while (x < 1) or (x > 9) do
+  while (y < 1) or (y > 9) do
   begin
     Write('Ingrese la coordenada y (Entre 1 y 9): ');
     Readln(y);
