@@ -10,15 +10,15 @@ procedure crearUsuario(var info:TUsuario);
 procedure usuarioExistente(var usuario:TUsuario;var inicioSesion:Boolean);
 procedure MenuUsuario(info:TUsuario);
 procedure nuevaPartida(var tabJugar:TSudokuBoard);
-procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
+procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard;var idPartida:Integer);
 procedure eliminarJugador(info:TUsuario);
-procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
+procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario;idPartida:Integer);
 procedure insertarXY(var tabJugar:TSudokuBoard);
 procedure consultarFila(tabJugar:TSudokuBoard);
 procedure consultarColumna(tabJugar:TSudokuBoard);
 procedure consultarBox(tabJugar:TSudokuBoard);
 procedure consultarTablero(tabJugar:TSudokuBoard);
-procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario);
+procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario;idPartida:Integer);
 
 implementation
 procedure mostrarMenuPrincipal;
@@ -153,7 +153,9 @@ var
   opcion:Char;
 	tabJugar:TSudokuBoard;
   eliminado:Boolean;
+  idPartida:Integer;
 begin
+
 
   //muestra menu
   mostrarMenuUsuario;
@@ -161,10 +163,11 @@ begin
 
   while opcion <> '4' do
   begin
+    idPartida:= 0;
     eliminado:=false;
     case opcion of
       '1': nuevaPartida(tabJugar);
-      '2': cargarPartida(info,tabJugar);
+      '2': cargarPartida(info,tabJugar,idPartida);
       '3': begin
             eliminarJugador(info);
             eliminado:=true;
@@ -175,7 +178,7 @@ begin
 
     if (opcion = '1') or (opcion = '2') then
   	begin
-  			MenuJuego(tabJugar,info);
+  			MenuJuego(tabJugar,info,idPartida);
   	end;
     if (eliminado) then
       opcion := '4'
@@ -220,10 +223,9 @@ begin
   Write('Nombre de la partida: ');
  readln(tabJugar.nombre);
  tabJugar.sudokuParcial := tabJugar.sudokuInicial;
-
 end;
 
-procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
+procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard;var idPartida:Integer);
 var
   partidas:TLSudokuBoard;
   max,pos:Integer;
@@ -241,6 +243,7 @@ begin
     Readln(pos);
   end;
   buscarSudokuBoard(pos,partidas,tabJugar);
+  idPartida := pos;
 end;
 
 procedure eliminarJugador(info:TUsuario);
@@ -262,7 +265,7 @@ begin
     writeln('Archivo de partidas no creado');
 end;
 
-procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
+procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario;idPartida:Integer);
 var
   opcion:Char;
 begin
@@ -283,7 +286,7 @@ begin
       '3': consultarColumna(tabJugar);
       '4': consultarBox(tabJugar);
       '5': consultarTablero(tabJugar);
-      '6': guardarPartida(tabJugar,info);
+      '6': guardarPartida(tabJugar,info,idPartida);
     end;
 
     mostrarMenuJuego();
@@ -424,7 +427,7 @@ begin
   ReadKey;
 end;
 
-procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario);
+procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario;idPartida:Integer);
 var
   archivo:TASudokuBoard;
   lista:TLSudokuBoard;
@@ -432,8 +435,8 @@ begin
   Assign(archivo,'datos/'+info.user+'.dat');
   iniSudokuBoard(lista);
   cargarSudokuBoard(archivo,lista);
+  eliminarSudokuBoard(idPartida,lista);
   insertarSudokuBoard(lista,tabJugar);
-
   guardarSudokuBoard(lista,archivo);
   Writeln('Partida guardad.');
   ReadKey;

@@ -339,6 +339,7 @@ begin
 		end;
   end;
 end;
+
 //devuelve una nueva lista con los tableros de la dificultad seleccionada
 procedure dificutladSudokuBoard(dif:Nivel;var lista:TLSudokuBoard;var nueva:TLSudokuBoard;var max:Integer);
 var
@@ -582,7 +583,6 @@ Function compruebaColumna(board : TSudokuBoard; columna : Integer) : Boolean;
 var
 	i,j:Integer;
 	repetido:Boolean;
-	conjunto:TConValidos;
 begin
 	repetido := false;
 	i:=1;
@@ -594,9 +594,9 @@ begin
 				repetido := true;
 			end;
 			j+=1;
-		until (j=10) or repetido;
+		until (j>9) or repetido;
 		i+=1;
-	until (i=9) or repetido;
+	until (i>8) or repetido;
 	compruebaColumna := not repetido;
 end;
 
