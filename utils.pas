@@ -127,7 +127,7 @@ procedure buscarUsuario(nombre:String;var lista:TLUsuario;var encontrado:TUsuari
 procedure guardarUsuario(var arch:TAUsuario;var lista:TLUsuario);
 
 //Carga los datos del archivo en una lista
-procedure cargarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+procedure cargarUsuario(var arch:TAUsuario;var lista:TLUsuario);
 
 
 
@@ -263,7 +263,7 @@ begin
   end;
 end;
 
-procedure cargarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+procedure cargarUsuario(var arch:TAUsuario;var lista:TLUsuario);
 var
 	usuario:TUsuario;
 begin

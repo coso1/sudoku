@@ -80,27 +80,30 @@ var
   listaUsuarios:TLUsuario;
   archUsuarios:TAUsuario;
   encontrado:TUsuario;
+  verificado:Boolean;
 begin
   Assign(archUsuarios,'datos/usuarios.dat');
   iniUsuario(listaUsuarios);
-  cargarUsuario(listaUsuarios,archUsuarios);
-  Write('Ingrese el nombre de usuario: ');
-  Readln(info.user);
-
-  buscarUsuario(info.user,listaUsuarios,encontrado);//buscar el usuario por nombre para ver si ya existe
-
-  if(info.user = encontrado.user) then //Si ya existe el usuario
+  cargarUsuario(archUsuarios,listaUsuarios);
+  verificado:=false;
+  while not verificado do
   begin
-    Writeln('El usuario "',info.user,'" ya existe');
-    ReadKey;
-  end
-  else
-  begin
-    Write('Ingrese una contraseña: ');
-    Readln(info.pass);
-    insertarUsuario(listaUsuarios,info);
-    guardarUsuario(archUsuarios,listaUsuarios);
+    Write('Ingrese el nombre de usuario: ');
+    Readln(info.user);
+    buscarUsuario(info.user,listaUsuarios,encontrado);//buscar el usuario por nombre para ver si ya existe
+    if(info.user = encontrado.user) then //Si ya existe el usuario
+    begin
+      Writeln('El usuario "',info.user,'" ya existe');
+    end
+    else
+    begin
+      verificado:=true;
+    end;
   end;
+  Write('Ingrese una contraseña: ');
+  Readln(info.pass);
+  insertarUsuario(listaUsuarios,info);
+  guardarUsuario(archUsuarios,listaUsuarios);
 end;
 
 procedure usuarioExistente(var usuario:TUsuario;var inicioSesion:Boolean);
@@ -112,7 +115,7 @@ var
 begin
   Assign(archUsuarios,'datos/usuarios.dat');
   iniUsuario(listaUsuarios);
-  cargarUsuario(listaUsuarios,archUsuarios);
+  cargarUsuario(archUsuarios,listaUsuarios);
 
   verificar:= false;
 	inicioSesion:= false;
@@ -237,7 +240,7 @@ var
 begin
   Assign(archUsuarios,'datos/usuarios.dat');
   iniUsuario(listaUsuarios);
-  cargarUsuario(listaUsuarios,archUsuarios);
+  cargarUsuario(archUsuarios,listaUsuarios);
   eliminarUsuario(info,listaUsuarios);
   guardarUsuario(archUsuarios,listaUsuarios);
   Assign(archPartidas,'datos/'+info.user+'.dat');
