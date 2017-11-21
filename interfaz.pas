@@ -1,158 +1,180 @@
 unit interfaz;
+
 interface
 uses utils,crt;
 procedure mostrarMenuPrincipal;
 procedure mostrarMenuUsuario;
 procedure mostrarMenuJuego;
-procedure MenuPrincipal(var salida:Boolean;listaUsuarios:TLUsuario;var arch:TAUsuario);
-procedure crearUsuario(lista:TLUsuario;var usuario:TUsuario;var arch:TAUsuario);
-procedure usuarioExistente(lista:TLUsuario;var usuario:TUsuario;var inicioSesion:Boolean);
-procedure MenuUsuario(var salida:Boolean;info:TUsuario;var listaUsuarios:TLUsuario;var archUsuarios:TAUsuario);
+procedure MenuPrincipal();
+procedure crearUsuario(var info:TUsuario);
+procedure usuarioExistente(var usuario:TUsuario;var inicioSesion:Boolean);
+procedure MenuUsuario(info:TUsuario);
 procedure nuevaPartida(var tabJugar:TSudokuBoard);
-procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard;var archPartidas :TASudokuBoard);
-procedure eliminarJugador(info:TUsuario;var listaUsuarios:TLUsuario;var archPartidas:TASudokuBoard;var archUsuarios:TAUsuario);
-procedure MenuJuego(var salida:Boolean;tablero:TSudokuBoard;info:TUsuario);
-
+procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
+procedure eliminarJugador(info:TUsuario);
+procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
 
 implementation
-
 procedure mostrarMenuPrincipal;
 begin
+  ClrScr;
 	Writeln('------- SUDOKU PA LO PIBE -------');
 	Writeln('Seleccione una opción:');
 	Writeln('1) Crear usuario.');
 	Writeln('2) Usuario existente.');
 	Writeln('3) Salir.');
+  Write('Opcion: ');
 end;
 procedure mostrarMenuUsuario;
 begin
+  ClrScr;
 	Writeln('Seleccione una opción:');
   Writeln('1) Nueva partida');
 	Writeln('2) Cargar partida');
   Writeln('3) Eliminar usuario');
 	Writeln('4) Salir');
+  Write('Opcion: ');
 end;
 procedure mostrarMenuJuego;
 begin
+  ClrScr;
 	Writeln('Seleccione una opción:');
 	Writeln('1) Insertar elemento');
 	Writeln('2) Guarda partida.');
 	Writeln('3) Salir.');
-end;
-
-procedure MenuPrincipal(var salida:Boolean;listaUsuarios:TLUsuario;var arch:TAUsuario);
-var
-  info:TUsuario;
-  opcion:Char;
-  salidaUsuario,inicioSesion:Boolean;
-
-begin
-  salidaUsuario := false;
-  ClrScr;
-  mostrarMenuPrincipal();
   Write('Opcion: ');
-  readln(opcion);
-  case opcion of
-    '1': crearUsuario(listaUsuarios,info,arch);
-    '2': usuarioExistente(listaUsuarios,info,inicioSesion);
-    '3': salida:=true;
-  else
-    begin
-      Writeln('Ingrese una opción válida.');
-      Writeln('Presione una tecla para continuar.');
-      ReadKey;//Espera a presionar una tecla para alcanzar a leer el mensaje
-    end;
-  end;
-
-
 end;
-procedure crearUsuario(lista:TLUsuario;var usuario:TUsuario;var arch:TAUsuario);
+procedure MenuPrincipal();
 var
-  buscado:TUsuario;
-  listo:Boolean;
+  opcion:Char;
+  info:TUsuario;
+  inicioSesion:Boolean;//indica si se inicio la sesion
 begin
-  listo:= false;
-  while not listo do
+  mostrarMenuPrincipal();
+  readln(opcion);
+  while (opcion <> '3') do
   begin
-    Write('Ingrese el nombre de usuario: ');
-    Readln(usuario.user);
-    if not (usuario.user = '') then
-      listo := true;
+    case opcion of
+      '1': crearUsuario(info);
+      '2': usuarioExistente(info,inicioSesion);
+    else
+      begin
+        Writeln('Ingrese una opción válida.');
+        Writeln('Presione una tecla para continuar.');
+        ReadKey;//Espera a presionar una tecla para alcanzar a leer el mensaje
+      end;
+    end;
+
+    if ((opcion = '1') or (opcion = '2')) and (inicioSesion) then
+    begin
+        MenuUsuario(info);
+    end;
+
+    mostrarMenuPrincipal();
+    readln(opcion);
   end;
-  buscarUsuario(usuario.user,lista,buscado);
-  if(usuario.user = buscado.user) then //Si ya existe el usuario
+end;
+
+procedure crearUsuario(var info:TUsuario);
+var
+  listaUsuarios:TLUsuario;
+  archUsuarios:TAUsuario;
+  encontrado:TUsuario;
+begin
+  Assign(archUsuarios,'datos/usuarios.dat');
+  iniUsuario(listaUsuarios);
+  cargarUsuario(listaUsuarios,archUsuarios);
+  Write('Ingrese el nombre de usuario: ');
+  Readln(info.user);
+
+  buscarUsuario(info.user,listaUsuarios,encontrado);//buscar el usuario por nombre para ver si ya existe
+
+  if(info.user = encontrado.user) then //Si ya existe el usuario
   begin
-    Writeln('El usuario "',usuario.user,'" ya existe');
+    Writeln('El usuario "',info.user,'" ya existe');
+    ReadKey;
   end
   else
   begin
     Write('Ingrese una contraseña: ');
-    Readln(usuario.pass);
-    insertarUsuario(lista,usuario);
-    guardarUsuario(lista,arch);
+    Readln(info.pass);
+    insertarUsuario(listaUsuarios,info);
+    guardarUsuario(archUsuarios,listaUsuarios);
   end;
 end;
 
-procedure usuarioExistente(lista:TLUsuario;var usuario:TUsuario;var inicioSesion:Boolean);
+procedure usuarioExistente(var usuario:TUsuario;var inicioSesion:Boolean);
 var
-  buscado:TUsuario;
-  listo:Boolean;
+  encontrado:TUsuario;
+  verificar:Boolean;
+  archUsuarios:TAUsuario;
+  listaUsuarios:TLUsuario;
 begin
-  listo:= false;
+  Assign(archUsuarios,'datos/usuarios.dat');
+  iniUsuario(listaUsuarios);
+  cargarUsuario(listaUsuarios,archUsuarios);
+
+  verificar:= false;
 	inicioSesion:= false;
-  while not listo do
-  begins
+  while not verificar do
+  begin
     Write('Ingrese el nombre de usuario: ');
     Readln(usuario.user);
     if not (usuario.user = '') then
-      listo := true;
+      verificar := true;
   end;
   Write('Ingrese una contraseña: ');
   Readln(usuario.pass);
-  buscarUsuario(usuario.user,lista,buscado);
-  if(usuario.user = buscado.user) and (usuario.pass = buscado.pass)  then //Si encuentra el usuario y la contraseña coincide
+  buscarUsuario(usuario.user,listaUsuarios,encontrado);
+  if(usuario.user = encontrado.user) and (usuario.pass = encontrado.pass)then //Si encuentra el usuario y la contraseña coincide
   begin
-    Writeln('Iniciando sesión');
 		inicioSesion := true;
   end
   else
   begin
     Writeln('Usuario o contraseña incorrectas');
   end;
-  Writeln('Presione una tecla para continuar.');
-  ReadKey;
 end;
 
-procedure MenuUsuario(var salida:Boolean;info:TUsuario;var listaUsuarios:TLUsuario;var archUsuarios:TAUsuario);
+procedure MenuUsuario(info:TUsuario);
 var
   opcion:Char;
 	tabJugar:TSudokuBoard;
-	salidaJuego:Boolean;
-	archPartidas :TASudokuBoard;
+  eliminado:Boolean;
 begin
-	Assign(archPartidas,'datos/'+info.user+'.dat');
-	salidaJuego := false;
-  ClrScr;
-  Writeln('Hola ',info.user,'!');
-  mostrarMenuUsuario;
-  Writeln('Opción: ');
-  Readln(opcion);
-  case opcion of
-    '1': nuevaPartida(tabJugar);
-  	'2': cargarPartida(info,tabJugar,archPartidas);
-		'3': eliminarJugador(info,listaUsuarios,archPartidas,archUsuarios);
-		'4': salida := true;
-  else
 
+  //muestra menu
+  mostrarMenuUsuario;
+  Readln(opcion);
+
+  while opcion <> '4' do
+  begin
+    eliminado:=false;
+    case opcion of
+      '1': nuevaPartida(tabJugar);
+      '2': cargarPartida(info,tabJugar);
+      '3': begin
+            eliminarJugador(info);
+            eliminado:=true;
+            end;
+    else
+      Writeln('Eligen una opción valida.');
+    end;
+
+    if (opcion = '1') or (opcion = '2') then
+  	begin
+  			MenuJuego(tabJugar,info);
+  	end;
+    if (eliminado) then
+      opcion := '4'
+    else
+    begin
+      //mostrar menu
+      mostrarMenuUsuario;
+      Readln(opcion);
+    end;
   end;
 
-	if (opcion = '1') or (opcion = '2') then
-	begin
-		while not salidaJuego do
-			MenuJuego(salidaJuego,tabJugar,info);
-	end;
-
-  ReadKey;
 end;
 
 procedure nuevaPartida(var tabJugar:TSudokuBoard);
@@ -187,11 +209,13 @@ begin
   readln(tabJugar.nombre);
 end;
 
-procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard;var archPartidas :TASudokuBoard);
+procedure cargarPartida(info:TUsuario;var tabJugar:TSudokuBoard);
 var
   partidas:TLSudokuBoard;
   max,pos:Integer;
+  archPartidas :TASudokuBoard;
 begin
+  Assign(archPartidas,'datos/'+info.user+'.dat');
   pos:=0;
   iniSudokuBoard(partidas);
   cargarSudokuBoard(archPartidas,partidas);
@@ -205,22 +229,27 @@ begin
   buscarSudokuBoard(pos,partidas,tabJugar);
 end;
 
-procedure eliminarJugador(info:TUsuario;var listaUsuarios:TLUsuario;var archPartidas:TASudokuBoard;var archUsuarios:TAUsuario);
+procedure eliminarJugador(info:TUsuario);
+var
+  archPartidas :TASudokuBoard;
+  archUsuarios :TAUsuario;
+  listaUsuarios:TLUsuario;
 begin
-	//eliminar usuario de la lista de usuarios
-
-	eliminarUsuario(info.user,listaUsuarios);
-
-	//guardarUsuario(listaUsuarios,archUsuarios);
-	//Erase(archPartidas);
-
+  Assign(archUsuarios,'datos/usuarios.dat');
+  iniUsuario(listaUsuarios);
+  cargarUsuario(listaUsuarios,archUsuarios);
+  eliminarUsuario(info,listaUsuarios);
+  guardarUsuario(archUsuarios,listaUsuarios);
+  Assign(archPartidas,'datos/'+info.user+'.dat');
+  {$I-}
+  erase(archPartidas);
+  {$I+}
+  if (IOResult <> 0) then
+    writeln('Archivo de partidas no creado');
 end;
 
-procedure MenuJuego(var salida:Boolean;tablero:TSudokuBoard;info:TUsuario);
+procedure MenuJuego(tabJugar:TSudokuBoard;info:TUsuario);
 begin
- writeln('menu de juego');
- salida := true;
- ReadKey;
-end;
 
+end;
 end.

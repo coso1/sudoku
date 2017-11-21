@@ -118,13 +118,13 @@ function verIniUsuario(var lista:TLUsuario):boolean;
 procedure insertarUsuario(var lista:TLUsuario;info:TUsuario);
 
 
-procedure eliminarUsuario(nombre:String;var lista:TLUsuario);
+procedure eliminarUsuario(info:TUsuario;var lista:TLUsuario);
 
 //Busca un usuario por nombre y si lo encuentra lo devuelve por el parametro "encontrado"
 procedure buscarUsuario(nombre:String;var lista:TLUsuario;var encontrado:TUsuario);
 
 //guarda una lista en un archivo de usuarios
-procedure guardarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+procedure guardarUsuario(var arch:TAUsuario;var lista:TLUsuario);
 
 //Carga los datos del archivo en una lista
 procedure cargarUsuario(var lista:TLUsuario;var arch:TAUsuario);
@@ -156,6 +156,7 @@ procedure cargarSudokuBoard(var arch:TASudokuBoard;var lista:TLSudokuBoard);
 procedure buscarSudokuBoard(pos:Integer;var lista:TLSudokuBoard;encontrado:TSudokuBoard);
 
 procedure mostrarSudokuBoard(var lista:TLSudokuBoard;var max:Integer);
+procedure mostrarUsuario(var lista:TLUsuario);
 
 Implementation
 
@@ -190,30 +191,32 @@ begin
 end;
 
 
-procedure eliminarUsuario(nombre:String;var lista:TLUsuario);
+procedure eliminarUsuario(info:TUsuario;var lista:TLUsuario);
 var
   aux,ant,sig:^TNUsuario;
 begin
-  if (lista.q^.next=nil) then
-  begin
-    writeln('La lista de usuarios no tiene registros guardados.');
-  end
-  else
-  begin
-    aux:=lista.q^.next;
-		while (aux^.next <> nil) and (aux^.info.user <> nombre) do
+	if (lista.q^.next=nil) then
+	begin
+		writeln('La lista de usuarios no tiene registros guardados.');
+	end
+	else
+	begin
+		ant := lista.q;
+		aux:=ant^.next;
+		sig := aux^.next;
+		while (aux^.next <> nil) and (aux^.info.user <> info.user) do
 		begin
-			aux := aux^.next; //Avanzar
+			ant := ant^.next;
+			aux:=ant^.next;
+			sig := aux^.next;
 		end;
-		if (aux^.info.user = nombre) then
+		if(aux^.info.user = info.user) then
 		begin
-			ant:= aux^.back;
-			sig:= aux^.next;
 			dispose(aux);
 			ant^.next := sig;
 			sig^.back := ant;
 		end;
-  end;
+	end;
 end;
 
 procedure buscarUsuario(nombre:String;var lista:TLUsuario;var encontrado:TUsuario);
@@ -239,7 +242,7 @@ begin
   end;
 end;
 
-procedure guardarUsuario(var lista:TLUsuario;var arch:TAUsuario);
+procedure guardarUsuario(var arch:TAUsuario;var lista:TLUsuario);
 var
   aux:^TNUsuario;
 begin
@@ -455,7 +458,24 @@ begin
 end;
 
 
-
+procedure mostrarUsuario(var lista:TLUsuario);
+var
+  aux:^TNUsuario;
+begin
+  if (lista.q^.next=nil) then
+  begin
+    writeln('La lista de tableros no tiene registros guardados.');
+  end
+  else
+  begin
+    aux:=lista.q^.next;
+		while (aux^.next <> nil) do
+		begin
+			Writeln(aux^.info.user,aux^.info.pass);
+			aux := aux^.next; //Avanzar
+		end;
+  end;
+end;
 
 
 
