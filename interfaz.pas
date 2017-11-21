@@ -17,6 +17,8 @@ procedure insertarXY(var tabJugar:TSudokuBoard);
 procedure consultarFila(tabJugar:TSudokuBoard);
 procedure consultarColumna(tabJugar:TSudokuBoard);
 procedure consultarBox(tabJugar:TSudokuBoard);
+procedure consultarTablero(tabJugar:TSudokuBoard);
+procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario);
 
 implementation
 procedure mostrarMenuPrincipal;
@@ -279,8 +281,8 @@ begin
       '2': consultarFila(tabJugar);
       '3': consultarColumna(tabJugar);
       '4': consultarBox(tabJugar);
-      (*'5': consultarTablero();
-      '6': guardarPartida();*)
+      '5': consultarTablero(tabJugar);
+      '6': guardarPartida(tabJugar,info);
     end;
 
     mostrarMenuJuego();
@@ -396,5 +398,44 @@ begin
   end;
   ReadKey;
 end;
+procedure consultarTablero(tabJugar:TSudokuBoard);
+var
+  i:Integer;
+  repetido:Boolean;
+begin
+  repetido:=false;
+  i:=1;
+  repeat
+    if (not compruebaBox(tabJugar,i)) or (not compruebaFila(tabJugar,i,1)) or (not compruebaColumna(tabJugar,i)) then
+    begin
+      repetido := true;
+    end;
+    i+=1;
+  until (i = 10) or repetido;
+  if not (repetido)then
+  begin
+    Writeln('El tablero es valido.');
+  end
+  else
+  begin
+    Writeln('El tablero NO es valido.');
+  end;
+  ReadKey;
+end;
+
+procedure guardarPartida(tabJugar:TSudokuBoard;info:TUsuario);
+var
+  archPartidasUsuario:TASudokuBoard;
+  listaPartidasUsuario:TLSudokuBoard;
+begin
+  Assign(archPartidasUsuario,'datos/'+info.user+'.dat');
+  iniSudokuBoard(listaPartidasUsuario);
+  cargarSudokuBoard(archPartidasUsuario,listaPartidasUsuario);
+  insertarSudokuBoard(listaPartidasUsuario,tabJugar);
+  guardarSudokuBoard(listaPartidasUsuario,archPartidasUsuario);
+  Writeln('Partida guardad.');
+  ReadKey;
+end;
+
 
 end.

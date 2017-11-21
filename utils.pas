@@ -587,8 +587,6 @@ begin
 			begin
 				repetido := true;
 			end;
-			writeln(board.sudokuParcial[fila,x],',',board.sudokuParcial[fila,j]);
-			writeln(repetido);
 			j+=1;
 		until (j>9) or repetido;
 		if(repetido) then
@@ -619,9 +617,9 @@ begin
 				repetido := true;
 			end;
 			j+=1;
-		until (j>9) or repetido;
+		until (j=10) or repetido;
 		i+=1;
-	until (i>9) or repetido;
+	until (i=9) or repetido;
 	compruebaColumna := not repetido;
 end;
 
